@@ -1,0 +1,30 @@
+extends layout
+
+block content
+  h1= title
+  video(data-dashjs-player='', autoplay='', src=url, controls='')
+
+  div.messages
+    div.message-block
+
+    form.message-form(onsubmit="return false;")
+      input.message-form__input(placeholder="Say something here", type="text")
+      input.message-form__button(value="Send", type="submit")
+
+  script(src="/socket.io/socket.io.js")
+  script(src="https://code.jquery.com/jquery-1.11.1.js")
+  script.
+    $(function () {
+      var socket = io();
+      $('form').submit(function(e){
+        e.preventDefault(); // prevents page reloading
+        socket.emit('chat message', $('.message-form__input').val());
+        $('.message-form__input').val('');
+        return false;
+      });
+      socket.on('chat message', function(msg){
+        $('.message-block').append($('<li>').text(msg));
+        });
+    });
+    
+  script(src='https://cdn.dashjs.org/latest/dash.all.min.js')
